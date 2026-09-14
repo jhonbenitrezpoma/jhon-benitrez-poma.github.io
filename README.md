@@ -4,7 +4,7 @@ Proyecto desarrollado en **Apache NetBeans** que abarca la implementación de m�
 
 ---
 
-## 📌 Contenido del Proyecto
+ Contenido del Proyecto
 
 ### 1. Actividad 1: Gestión de Arreglos (`GestionArreglos.java`)
 Contiene métodos desarrollados para realizar operaciones avanzadas sobre arreglos enteros:
