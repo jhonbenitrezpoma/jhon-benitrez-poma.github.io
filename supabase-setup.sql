@@ -40,7 +40,7 @@ returns boolean
 language sql
 stable
 as $$
-  select (auth.jwt() ->> 'email') = 'TU_CORREO_AQUI'
+  select (auth.jwt() ->> 'email') = 'tuhermana1591q@gmail.com'
 $$;
 
 -- 3) SEGURIDAD (RLS): todos leen, solo el propietario escribe ----------
