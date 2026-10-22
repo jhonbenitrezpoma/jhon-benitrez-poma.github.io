@@ -1026,7 +1026,17 @@ function moveDrag(e){if(!start)return;const dx=e.clientX-start.x,dy=e.clientY-st
 function endDrag(){start=null}
 for(const el of [launcher,document.getElementById('botHandle')]){el.addEventListener('pointerdown',startDrag);el.addEventListener('pointermove',moveDrag);el.addEventListener('pointerup',endDrag);el.addEventListener('pointercancel',endDrag)}
 })();
+    
 </script>
+    
+<!-- =================================== -->
+<!-- RONIN - ASISTENTE ACADÉMICO UPLA -->
+<!-- =================================== -->
+
+<link rel="stylesheet" href="ronin.css">
+
+<script src="ronin.js" defer></script>
+
 </body>
 </html>
 
