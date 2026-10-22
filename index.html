@@ -975,6 +975,58 @@
             await cargarComentarios();
         }
     </script>
+
+<!-- Asistente independiente: no altera Supabase -->
+<div id="botDock" class="bot-dock" aria-label="Asistente de algoritmos">
+  <button id="botLauncher" class="bot-launcher" aria-label="Abrir asistente" title="Arrastra para mover · Clic para conversar">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="robotGrad" x2="1" y2="1"><stop stop-color="#e9faff"/><stop offset="1" stop-color="#88b5d2"/></linearGradient></defs><path d="M50 9V20" stroke="#f36d83" stroke-width="5"/><circle cx="50" cy="8" r="5" fill="#f36d83"/><rect x="12" y="20" width="76" height="65" rx="23" fill="url(#robotGrad)"/><rect x="20" y="34" width="60" height="31" rx="13" fill="#102438"/><ellipse cx="37" cy="49" rx="7" ry="9" fill="#6fffe4"/><ellipse cx="63" cy="49" rx="7" ry="9" fill="#6fffe4"/><path d="M40 72Q50 79 60 72" fill="none" stroke="#18344b" stroke-width="3" stroke-linecap="round"/><circle cx="10" cy="51" r="6" fill="#f36d83"/><circle cx="90" cy="51" r="6" fill="#f36d83"/></svg>
+  </button>
+  <section id="botPanel" class="bot-panel" hidden aria-label="Chat de algoritmos">
+    <header id="botHandle" class="bot-head"><div><small>学習 / LEARNING ASSISTANT</small><strong>RONIN · ALGORITMOS</strong><span>● Tutor académico local</span></div><button id="botClose" type="button" aria-label="Cerrar chat">✕</button></header>
+    <div id="botMessages" class="bot-messages" aria-live="polite"><div class="bot-message bot-answer">¡Hola! Soy RONIN 🤖. Te ayudo con algoritmos, estructuras de datos, pseudocódigo, PSeInt, Java, complejidad y ejercicios. ¿Qué deseas aprender?</div></div>
+    <div class="bot-suggestions"><button type="button" data-question="¿Qué es un algoritmo?">Algoritmos</button><button type="button" data-question="Explícame arreglos con ejemplo">Arreglos</button><button type="button" data-question="¿Qué es una lista enlazada?">Listas</button><button type="button" data-question="Explícame Big O">Big O</button></div>
+    <form id="botForm" class="bot-form"><input id="botInput" maxlength="500" autocomplete="off" placeholder="Pregunta sobre el curso..." aria-label="Tu pregunta" required><button type="submit" aria-label="Enviar">➤</button></form>
+    <p class="bot-note">Respuestas educativas integradas · Sin conexión a IA externa</p>
+  </section>
+</div>
+<script>
+(() => {
+'use strict';
+const dock=document.getElementById('botDock'), launcher=document.getElementById('botLauncher'), panel=document.getElementById('botPanel'), messages=document.getElementById('botMessages'), form=document.getElementById('botForm'), input=document.getElementById('botInput');
+const topics=[
+{keys:['algoritmo','algoritmos'],answer:'Un algoritmo es una secuencia finita, ordenada y precisa de instrucciones para resolver un problema. Sus propiedades incluyen entrada, proceso, salida, finitud y claridad.\nEjemplo en PSeInt:\nAlgoritmo Sumar\n  Definir a,b Como Entero\n  Leer a,b\n  Escribir a+b\nFinAlgoritmo'},
+{keys:['estructura de datos','estructuras de datos'],answer:'Una estructura de datos organiza información para acceder a ella y modificarla eficientemente. Ejemplos: arreglos, listas enlazadas, pilas, colas, árboles, grafos y tablas hash. Se elige según las operaciones que necesitas.'},
+{keys:['arreglo','array','vector','matriz'],answer:'Un arreglo almacena elementos del mismo tipo en posiciones indexadas. Acceso por índice: O(1); búsqueda lineal: O(n).\nJava:\nint[] notas = {12, 16, 18};\nfor (int nota : notas) {\n  System.out.println(nota);\n}\nUna matriz es un arreglo de dos dimensiones.'},
+{keys:['lista enlazada','listas enlazadas','linked list'],answer:'Una lista enlazada contiene nodos con un dato y una referencia al siguiente. Permite insertar al inicio en O(1); buscar por valor suele costar O(n). Puede ser simple, doble o circular.'},
+{keys:['pila','stack','lifO'],answer:'Una pila sigue LIFO: el último en entrar es el primero en salir. Operaciones: push (apilar), pop (retirar), peek (consultar cima). Ejemplos: deshacer cambios y llamadas de funciones.\nJava: Deque<Integer> pila = new ArrayDeque<>(); pila.push(5); pila.pop();'},
+{keys:['cola','queue','fifo'],answer:'Una cola sigue FIFO: el primero en entrar es el primero en salir. Operaciones: enqueue (encolar) y dequeue (desencolar). Ejemplo: atención de turnos. En Java: Queue<Integer> cola = new ArrayDeque<>();'},
+{keys:['arbol','árbol','binario','bst'],answer:'Un árbol es una estructura jerárquica de nodos conectados. Conceptos: raíz, padre, hijo, hoja y altura. En un árbol binario cada nodo tiene hasta dos hijos; en un BST los menores suelen ir a la izquierda y los mayores a la derecha.'},
+{keys:['grafo','grafos','bfs','dfs'],answer:'Un grafo está formado por vértices y aristas. Puede ser dirigido o no dirigido. BFS recorre por niveles usando una cola; DFS explora en profundidad usando una pila o recursión. Aplicaciones: rutas, redes y dependencias.'},
+{keys:['big o','complejidad','notación o','notacion o','rendimiento'],answer:'Big O describe cómo crece el costo de un algoritmo con el tamaño n de la entrada. O(1): constante; O(log n): logarítmico; O(n): lineal; O(n log n): ordenación eficiente; O(n²): dos bucles anidados. También se analiza el espacio usado.'},
+{keys:['busqueda binaria','búsqueda binaria'],answer:'La búsqueda binaria requiere datos ordenados. Compara el objetivo con el elemento central y descarta la mitad que no corresponde. Tiempo O(log n). En cada paso: medio=(inicio+fin)//2.'},
+{keys:['busqueda','búsqueda','secuencial'],answer:'La búsqueda lineal revisa elementos uno a uno hasta encontrar el valor: O(n). Si el arreglo está ordenado, la búsqueda binaria puede reducirlo a O(log n).'},
+{keys:['ordenamiento','burbuja','bubble','quicksort','mergesort'],answer:'Ordenar consiste en organizar datos por un criterio. Burbuja compara vecinos: O(n²) en promedio. Merge sort divide y mezcla: O(n log n). Quick sort usa un pivote: O(n log n) promedio, O(n²) peor caso.'},
+{keys:['recursividad','recursión','recursion'],answer:'Una función recursiva se llama a sí misma y necesita un caso base para detenerse.\nJava:\nstatic int factorial(int n) {\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n}\nSu costo temporal es O(n).'},
+{keys:['pseint','pseudocodigo','pseudocódigo','diagrama de flujo'],answer:'PSeInt permite practicar algoritmos en pseudocódigo. Estructuras principales: Si/Entonces, Segun, Para, Mientras y Repetir.\nEjemplo:\nAlgoritmo ParImpar\n Definir n Como Entero\n Leer n\n Si n MOD 2 = 0 Entonces\n  Escribir "Par"\n SiNo\n  Escribir "Impar"\n FinSi\nFinAlgoritmo'},
+{keys:['java','netbeans'],answer:'En Java puedes implementar algoritmos con variables, condiciones, bucles, métodos y clases. Para estructuras de datos se usan arreglos, ArrayList, ArrayDeque, HashMap, HashSet y árboles según el problema. Dime qué ejercicio deseas resolver.'},
+{keys:['hash','diccionario','mapa'],answer:'Una tabla hash relaciona claves con valores mediante una función hash. Búsqueda e inserción suelen ser O(1) promedio, aunque las colisiones pueden afectar el rendimiento. Java: Map<String,Integer> edades = new HashMap<>();'},
+{keys:['ejercicio','practica','práctica'],answer:'Ejercicio: lee 5 números enteros, guárdalos en un arreglo, calcula su suma, promedio y valor máximo.\nPistas: usa un bucle Para, acumulador suma y variable maximo. Si quieres, escribe «resuelve el ejercicio de arreglos».'},
+{keys:['resuelve el ejercicio'],answer:'PSeInt:\nAlgoritmo Notas\n Dimension v[5]\n suma <- 0\n Para i <- 1 Hasta 5 Hacer\n  Leer v[i]\n  suma <- suma + v[i]\n  Si i = 1 O v[i] > maximo Entonces\n   maximo <- v[i]\n  FinSi\n FinPara\n Escribir "Promedio: ", suma/5\n Escribir "Máximo: ", maximo\nFinAlgoritmo'},
+{keys:['variable','condicional','bucle','ciclo','while','for'],answer:'Las variables guardan datos; los condicionales toman decisiones (Si/Else); los bucles repiten instrucciones (Para/For, Mientras/While). Puedo explicarte cualquiera con ejemplos en Java o PSeInt.'}
+];
+function normalize(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()}
+function reply(question){const q=normalize(question);if(/^(hola|buenas|hey|saludos)/.test(q))return '¡Hola! Soy RONIN. Pregúntame por arreglos, listas, pilas, colas, árboles, grafos, búsqueda, ordenamiento, Big O, Java o PSeInt.';let best=null,score=0;for(const topic of topics){let n=0;for(const key of topic.keys){const k=normalize(key);if(q.includes(k))n+=k.length+5}if(n>score){score=n;best=topic}}return best?best.answer:'Puedo ayudarte con Algoritmos y Estructuras de Datos, pero no tengo una respuesta específica para esa pregunta en mi base local. Prueba con «explícame pilas», «ejemplo de arreglos en Java» o «qué es Big O». Para respuestas libres sobre cualquier ejercicio necesitarías conectar una IA mediante un servidor seguro.'}
+function add(text,cls){const node=document.createElement('div');node.className='bot-message '+cls;node.textContent=text;messages.appendChild(node);messages.scrollTop=messages.scrollHeight}
+function ask(q){const value=q.trim();if(!value)return;add(value,'bot-user');add(reply(value),'bot-answer')}
+form.addEventListener('submit',e=>{e.preventDefault();ask(input.value);input.value='';input.focus()});document.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>ask(b.dataset.question)));
+function toggle(){panel.hidden=!panel.hidden;if(!panel.hidden)input.focus()}
+launcher.addEventListener('click',()=>{if(!dragged)toggle();dragged=false});document.getElementById('botClose').addEventListener('click',()=>panel.hidden=true);
+let start=null,dragged=false;function startDrag(e){if(e.button!==undefined&&e.button!==0)return;start={x:e.clientX,y:e.clientY,left:dock.getBoundingClientRect().left,top:dock.getBoundingClientRect().top};dragged=false;e.currentTarget.setPointerCapture(e.pointerId)}
+function moveDrag(e){if(!start)return;const dx=e.clientX-start.x,dy=e.clientY-start.y;if(Math.abs(dx)+Math.abs(dy)>7)dragged=true;if(!dragged)return;dock.style.left=Math.max(0,Math.min(window.innerWidth-dock.offsetWidth,start.left+dx))+'px';dock.style.top=Math.max(0,Math.min(window.innerHeight-dock.offsetHeight,start.top+dy))+'px';dock.style.right='auto';dock.style.bottom='auto'}
+function endDrag(){start=null}
+for(const el of [launcher,document.getElementById('botHandle')]){el.addEventListener('pointerdown',startDrag);el.addEventListener('pointermove',moveDrag);el.addEventListener('pointerup',endDrag);el.addEventListener('pointercancel',endDrag)}
+})();
+</script>
 </body>
 </html>
 
